@@ -6,6 +6,8 @@
 
 **牛派**是一款运行在 Windows 上的行情研究工具：把「搜股票 → 看行情 → 加自选 → 写公式 → 跑回测 → 推到手机」这条链路收在一个本地客户端里，另含 7×24 快讯、全球指数、期货期权与公募基金。软件**支持接入同花顺金融数据服务（Fuyao）开放接口**——凭据由你自己申请并在本机填写；**缓存、指标计算与回测全部在你的机器上完成**，软件本身不提供数据、也不代你注册。
 
+> 第一次使用建议先看 **[普通用户使用指南](USER-GUIDE.md)**：用截图快速了解各个页面，以及从配置数据到看行情、回测和推送的完整流程。
+
 > 本仓库只存放**发行包**（安装版与免安装版），源码不公开。GitHub 在本页自动生成的
 > `Source code (zip/tar.gz)` 只是本仓库自身的快照，不是本项目源码。
 
@@ -111,6 +113,10 @@
   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=libertyAlone/bull-pie-client&type=Date" />
   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=libertyAlone/bull-pie-client&type=Date" />
 </picture>
+
+> 图表由 [star-history.com](https://star-history.com) 实时渲染（它按 GitHub 的 star 时间戳聚合出日期曲线），
+> 这里只是一张外链 SVG，不占仓库体积，也不会随版本发版而更新。
+> 图没显示出来（比如 Gitee 侧过滤了 HTML）可以[在 star-history 上打开 ↗](https://star-history.com/#libertyAlone/bull-pie-client&Date)。
 
 ## 问题反馈
 
