@@ -126,11 +126,13 @@ bull-pie-cli screen --formula "(HHV(H,172)-LLV(L,172))/LLV(L,172)*100;" \
 ### `shape` — 形态相似度搜索
 
 ```bash
-bull-pie-cli shape --reference 600519.SH [--window 20] [--vol-days 2] [--vol-ratio 1.5] \
+bull-pie-cli shape --reference 600519.SH [--window 20] [--start 2026-06-01 --end 2026-08-04] \
+  [--vol-days 2] [--vol-ratio 1.5] \
   [--near-low 8] [--limit 10] [--include-st] [--json]
 ```
 
-按参照标的最近的形状（归一化价格 + 量能距离）在**本地全市场底库**上找相似股票，
+按参照标的的形状（归一化价格 + 量能距离）在**本地全市场底库**上找相似股票。
+默认取最近 `--window` 根；`--start/--end` 成对给出时按指定历史区间比较（最多 120 个交易日）。
 可要求近期连续放量、限制在区间低点附近。默认排除 ST。
 
 ### `backtest` — 回测
@@ -195,7 +197,7 @@ bull-pie-cli breadth   [--out breadth.json] [--json]
 bull-pie-cli sentiment [--out sentiment.json] [--json]
 ```
 
-- `breadth`：两市成交额、涨跌平家数、平均与中位数涨跌幅、涨跌幅分布、分板块（主板 / 创业板 / 科创板 / 北交所）概览。
+- `breadth`：沪深京成交额、涨跌平家数、平均与中位数涨跌幅、涨跌幅分布、分板块（主板 / 创业板 / 科创板 / 北交所）概览。
 - `sentiment`：涨停 / 跌停 / 炸板家数、最高连板、涨停梯队（连板数、封单额、首封时间、换手）、热股榜。
 - 都是**当日快照**：非交易日 / 盘前会给最近一个交易日的数据，返回里的 `tradeDate` 写明是哪天。上游没有开放资金流接口，板块涨跌是资金动向在本项目里的代理。
 
