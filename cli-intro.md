@@ -1,7 +1,10 @@
 # 命令行（CLI）用法：把数据、选股与回测接进你的脚本
 
-随包附带的 `bull-pie-cli.exe` 是**只读**命令行入口：读同一份数据目录与凭据，
-调同一套计算逻辑，所以结果与图形界面一致——但它能写进脚本、接进定时任务、导给 Excel 或 Python。
+`bull-pie-cli` 是**只读**命令行入口：读同一份数据目录与凭据，调同一套计算逻辑，
+所以结果与图形界面一致——但它能写进脚本、接进定时任务、导给 Excel 或 Python。
+
+> 下文示例里的 `bull-pie-cli` 指二进制本身：Windows 上是 `bull-pie-cli.exe`，
+> macOS / Linux 上是解压出来的 `bull-pie-cli`（当前目录下写 `./bull-pie-cli`）。
 
 > 只是想让 AI 帮你取数？那用 MCP 更省事：见 [mcp-intro.md](mcp-intro.md)。
 
@@ -31,11 +34,24 @@
 
 ## 二、快速开始
 
-1. 免安装版解压后，`bull-pie-cli.exe` 与 `bull-pie.exe` 在同一目录；安装版在安装目录下。
-   想在任何地方直接用，把它所在目录加进 PATH，或写全路径。
-2. 先跑一次状态检查（**不联网**，只看本地）：
+**1. 拿到它**（各平台都有现成的，挑一个来源即可）：
 
-```powershell
+| 平台 | 从哪拿 | 备注 |
+| --- | --- | --- |
+| Windows | 免安装版解压后，`bull-pie-cli.exe` 与 `bull-pie.exe` 在同一目录；安装版在安装目录下 | 也可以单独下载 `bull-pie-cli-<版本>-windows-x64.zip` |
+| macOS | 单独下载 `bull-pie-cli-<版本>-macos-universal.zip`（一份同时支持 Intel 与 Apple 芯片） | 已经装了图形界面的话，`bull-pie.app/Contents/MacOS/bull-pie-cli` 就是同一个二进制 |
+
+**2. 放到顺手的地方**：Windows 把它所在目录加进 PATH；macOS 拷进 PATH
+（从浏览器下载的二进制带隔离属性，先解掉，否则可能报「无法验证开发者 / 已损坏」）：
+
+```bash
+xattr -d com.apple.quarantine ./bull-pie-cli     # 只有下载来的才需要
+sudo cp bull-pie-cli /usr/local/bin/
+```
+
+**3. 先跑一次状态检查**（**不联网**，只看本地）：
+
+```bash
 bull-pie-cli status
 ```
 
@@ -53,8 +69,12 @@ bull-pie-cli status
 
 `--json` 会给出同样内容的机器可读版本（脚本里用这个）。
 
-3. 需要联网的两个前提，都在图形界面里配一次即可：**数据接口凭据**（设置 → API 凭据）、
-   **全市场日线底库**（设置 → 数据，想用 `--universe market` 选股或跑全市场回测时需要）。
+> macOS 上「应用数据目录」是 `~/.local/share/com.bull-pie.app`、凭据来源显示「macOS 钥匙串」；
+> Windows 是 `%APPDATA%\com.bull-pie.app` + 「Windows 凭据管理器」。两边都不会另建一份库。
+
+**4. 需要联网的两个前提**，都在图形界面里配一次即可：**数据接口凭据**（设置 → API 凭据）、
+**全市场日线底库**（设置 → 数据，想用 `--universe market` 选股或跑全市场回测时需要）。
+只装命令行版的话这两样都建不起来——这正是它是「只读入口」的含义。
 
 ---
 

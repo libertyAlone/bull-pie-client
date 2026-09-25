@@ -8,12 +8,22 @@
 
 ### 1. 下载并启动
 
-在仓库的 [Releases](../../releases) 页面下载：
+在仓库的 [Releases](../../releases) 页面下载（**Windows 与 macOS 都有现成的包**）：
 
-- `bull-pie_<版本>_x64-setup.exe`：安装版，适合日常使用；
-- `bull-pie-<版本>-portable.zip`：免安装版，解压后直接运行。
+| 你的系统 | 下载哪个 | 说明 |
+| --- | --- | --- |
+| Windows | `bull-pie_<版本>_x64-setup.exe` | 安装版，双击安装即可，适合日常使用 |
+| Windows | `bull-pie-<版本>-portable.zip` | 免安装版，解压后直接运行 `bull-pie.exe` |
+| macOS | `bull-pie_<版本>_universal.dmg` | 安装包：挂载后把牛派拖进「应用程序」。**一份同时支持 Intel 与 M 芯片**，不用挑架构 |
+| macOS | `bull-pie-<版本>-macos-universal.zip` | 免安装版，解压后就是一个 `.app`，拖到哪都能跑 |
 
-需要 Windows 10 1803+ / Windows 11（64 位）与 WebView2 运行时。启动后闪退或白屏，先装微软 WebView2 Runtime。
+两个系统的运行要求：
+
+- **Windows 10 1803+ / Windows 11（64 位）**：依赖系统的 WebView2 运行时（Win11 与较新的 Win10 自带；启动即退出或白屏就到微软官网装一次「Microsoft Edge WebView2 Runtime」）。
+- **macOS**：Intel 与 Apple 芯片（M 系列）都支持，系统自带网页内核，没有额外依赖。
+
+> **macOS 第一次打开被拦**（提示「无法打开，因为 Apple 无法检查其是否包含恶意软件」）：这是没做签名 / 公证的正常现象——在「应用程序」里**右键点牛派 → 打开 → 再点一次「打开」**即可；或者执行
+> `xattr -dr com.apple.quarantine /Applications/bull-pie.app`。
 
 ### 2. 配置数据接口
 

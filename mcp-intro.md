@@ -1,10 +1,10 @@
 # MCP 用法：让你的 AI 直接查本机的行情与财务
 
-牛派内置一个 **MCP（Model Context Protocol）服务器**：`bull-pie-cli.exe mcp`。把它接到支持 MCP 的
+牛派内置一个 **MCP（Model Context Protocol）服务器**：`bull-pie-cli mcp`（Windows 上是 `bull-pie-cli.exe`）。把它接到支持 MCP 的
 AI 客户端（Claude Desktop、Cursor、Cline、Continue、Windsurf、Zed…）之后，模型就能**自己调用**
 本软件的数据能力——查行情、看财务、跑公式选股、跑回测、看期货期权与基金，不用你手动复制粘贴数字。
 
-它就是随包附带的命令行程序：**只读**、**只在本机跑**，不会改你的数据、也不会替你下单。
+它就是那个命令行程序（各平台都单独有一份包，见下）：**只读**、**只在本机跑**，不会改你的数据、也不会替你下单。
 
 ---
 
@@ -26,7 +26,11 @@ AI 客户端（Claude Desktop、Cursor、Cline、Continue、Windsurf、Zed…）
 
 ## 二、前置条件
 
-1. 装好牛派（安装版或免安装版都行）。免安装版的 `bull-pie.exe` 与 `bull-pie-cli.exe` 在同一目录。
+1. 拿到 `bull-pie-cli`：
+   - **Windows**：装好牛派即可（免安装版的 `bull-pie.exe` 与 `bull-pie-cli.exe` 在同一目录、安装版在安装目录下），
+     或单独下载 `bull-pie-cli-<版本>-windows-x64.zip`。
+   - **macOS**：单独下载 `bull-pie-cli-<版本>-macos-universal.zip`（一份同时支持 Intel 与 Apple 芯片）；
+     已经装了图形界面的话 `bull-pie.app/Contents/MacOS/bull-pie-cli` 就是同一个二进制。
 2. **先用图形界面配一次数据接口凭据**（设置 → API 凭据）。MCP 读的是同一份本机凭据（系统凭据库），
    所以不必每次给客户端填 Key；也可以用环境变量注入（见下）。
 3. **图形界面不必一直开着**：MCP 是独立进程，读同一份数据目录。但本地库越全，能回答的问题越多——
@@ -40,7 +44,8 @@ AI 客户端（Claude Desktop、Cursor、Cline、Continue、Windsurf、Zed…）
 
 ## 三、接上客户端（三分钟）
 
-找到 `bull-pie-cli.exe` 的完整路径（例如 `C:\Tools\bull-pie\bull-pie-cli.exe`），在客户端配置里加一段：
+找到 `bull-pie-cli` 的完整路径（Windows 例如 `C:\Tools\bull-pie\bull-pie-cli.exe`；
+macOS 例如 `/Applications/bull-pie.app/Contents/MacOS/bull-pie-cli`），在客户端配置里加一段：
 
 **Claude Desktop**（`claude_desktop_config.json`）、**Cursor**（`mcp.json`）、**Cline / Continue / Windsurf** 结构一致：
 
@@ -55,7 +60,20 @@ AI 客户端（Claude Desktop、Cursor、Cline、Continue、Windsurf、Zed…）
 }
 ```
 
-- Windows 路径用**正斜杠** `/`，或用双反斜杠 `\\`（JSON 里单个 `\` 是转义符）。
+macOS 上就是同一个结构，只换 `command`：
+
+```json
+{
+  "mcpServers": {
+    "bull-pie": {
+      "command": "/Users/你/Applications/bull-pie.app/Contents/MacOS/bull-pie-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+- 路径要用**绝对路径**；Windows 上写正斜杠 `/` 或双反斜杠 `\\`（JSON 里单个 `\` 是转义符）。
 - 数据目录不在默认位置时加 `--app-dir`：`"args": ["mcp", "--app-dir", "D:/bull-pie-data"]`。
 - 想用环境变量给凭据（不用界面里的凭据库）：加 `"env": { "HITHINK_FINANCE_API_KEY": "你的凭据" }`。
   凭据只存在你机器上，软件不会上传。
@@ -131,7 +149,8 @@ AI 客户端（Claude Desktop、Cursor、Cline、Continue、Windsurf、Zed…）
 
 | 现象 | 原因与处理 |
 | --- | --- |
-| 客户端里看不到 `bull-pie` | 配置的路径不对（用绝对路径、正斜杠），或客户端没重启；确认 `bull-pie-cli.exe mcp` 能手动跑起来 |
+| 客户端里看不到 `bull-pie` | 配置的路径不对（用绝对路径、正斜杠），或客户端没重启；确认 `bull-pie-cli mcp` 能手动跑起来 |
+| macOS 上手动跑就报「无法验证开发者 / 已损坏」 | 从浏览器下载的二进制带隔离属性：`xattr -d com.apple.quarantine /path/to/bull-pie-cli`；也可以直接用 `.app` 里那份（右键打开一次应用后可解） |
 | 工具报「未配置 API Key」 | 先在界面里配好凭据，或在客户端配置的 `env` 里给 `HITHINK_FINANCE_API_KEY` |
 | 选股 / 回测返回空名单 | 本地底库没导入（先看 `dump_status`）；或在「设置 → 数据」导入全市场日线 |
 | 问「今天涨停梯队」拿到昨天的 | 非交易日 / 盘中数据未就绪时，上游给的是最近一个交易日的快照，返回里会写明日期 |

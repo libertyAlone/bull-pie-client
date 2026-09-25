@@ -4,7 +4,7 @@
 
 <h1 align="center">牛派 · A 股行情研究与回测工具</h1>
 
-**牛派**是一款 Windows 桌面软件，适合用来看行情、管理自选和持仓、做条件选股与策略回测；也可以看港美股（长桥只读行情，可选）。
+**牛派**是一款 Windows / macOS 桌面软件，适合用来看行情、管理自选和持仓、做条件选股与策略回测；也可以看港美股（长桥只读行情，可选）。
 
 软件本身可免费使用，数据保存在你的电脑上。A 股行情需要你自己申请的数据接口 Key；港美股行情需要一个长桥开发者账号（软件里点一下授权即可）。软件不提供或代办任何数据账号。
 
@@ -17,20 +17,24 @@
 - [GitHub Releases](https://github.com/libertyAlone/bull-pie-client/releases)
 - [Gitee Releases](https://gitee.com/libertyAlone/bull-pie-client/releases)（更新可能稍晚，以 GitHub 为准）
 
-| 文件 | 适合谁 |
-| --- | --- |
-| `bull-pie_<版本>_x64-setup.exe` | **推荐普通用户使用**，双击安装即可 |
-| `bull-pie-<版本>-portable.zip` | 免安装版，解压后运行 `bull-pie.exe` |
-| `bull-pie_<版本>_x64_en-US.msi` | 适合需要 MSI 安装包的用户 |
+| 文件 | 平台 | 适合谁 |
+| --- | --- | --- |
+| `bull-pie_<版本>_x64-setup.exe` | Windows | **推荐普通用户使用**，双击安装即可 |
+| `bull-pie-<版本>-portable.zip` | Windows | 免安装版，解压后运行 `bull-pie.exe` |
+| `bull-pie_<版本>_x64_en-US.msi` | Windows | 适合需要 MSI 安装包的用户 |
+| `bull-pie_<版本>_universal.dmg` | macOS | **推荐 Mac 用户使用**：挂载后把牛派拖进「应用程序」。**一份同时支持 Intel 与 M 芯片** |
+| `bull-pie-<版本>-macos-universal.zip` | macOS | 免安装版，解压后就是一个 `.app` |
+| `bull-pie-cli-<版本>-windows-x64.zip` / `-macos-universal.zip` | 两个平台 | **只想用命令行 / 接 AI 客户端**：只有一个只读命令行入口，解压即用，用法见[命令行](cli-intro.md)与 [MCP](mcp-intro.md)（图形界面包里也带着同一个 CLI） |
 
 请不要下载发布页面里的 `Source code`，那不是可直接运行的软件。
 
 ## 使用要求
 
-- Windows 10 或 Windows 11，64 位系统。
+- **Windows 10（1803 及以上）或 Windows 11**，64 位系统；或者 **macOS**（Intel 与 Apple 芯片都支持）。
 - 一个由你自己申请的行情数据 API Key。
 - 想看港美股时，另需一个[长桥（Longbridge）开发者账号](https://open.longbridge.com/dashboard/tokens)：在「港美股」页点「用长桥账号登录」，浏览器里授权一次即可，**不用抄 App Key / Secret**（备选方案仍可用 API Key）。
-- 如果软件打开后白屏或闪退，请安装 [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。
+- **Windows**：如果软件打开后白屏或闪退，请安装 [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。
+- **macOS**：安装包没有做签名 / 公证，第一次打开会被 Gatekeeper 拦——在「应用程序」里**右键点牛派 → 打开 → 再点一次「打开」**即可（或执行 `xattr -dr com.apple.quarantine /Applications/bull-pie.app`）。
 
 > 软件免费不等于数据服务免费。数据权限、额度和使用范围，请以数据服务方的规则为准。
 
@@ -65,7 +69,7 @@
 
 - API Key、模型 Key 和通知凭据只保存在你的电脑上，请不要发给别人，也不要贴到反馈截图里。
 - 港美股用的是长桥的登录授权（OAuth），token 与 API Key 一样只保存在本机凭据库；港美股行情只在软件里展示，不参与 A 股的回测、选股与推送，也不会二次分发。
-- 行情缓存、持仓记录、回测记录和软件设置默认保存在：`%APPDATA%\com.bull-pie.app`。
+- 行情缓存、持仓记录、回测记录和软件设置默认保存在：Windows 是 `%APPDATA%\com.bull-pie.app`，macOS 是 `~/.local/share/com.bull-pie.app`（两个平台都一样：删掉这个目录等于清空本地数据，先备份再删）。
 - 设置页可以导出自选、偏好、公式和提醒规则。
 - 如果要完整保留持仓流水、历史回测和缓存数据，请备份整个数据目录。
 - 使用外部 AI 服务时，界面会提示哪些内容将被发送；不需要 AI 功能可以完全不配置。
@@ -74,14 +78,16 @@
 
 | 问题 | 处理方法 |
 | --- | --- |
-| 双击后白屏或闪退 | 安装 WebView2 Runtime 后重试 |
+| 双击后白屏或闪退（Windows） | 安装 WebView2 Runtime 后重试 |
+| Mac 上提示「无法打开，因为 Apple 无法检查其是否包含恶意软件」 | 安装包没做签名 / 公证，属于正常现象：在「应用程序」里**右键点牛派 → 打开 → 再点一次「打开」**；或执行 `xattr -dr com.apple.quarantine /Applications/bull-pie.app` |
+| Mac 上下载来的 `.dmg` 打不开 | 确认下的是 `bull-pie_<版本>_universal.dmg`（通用包，Intel 与 M 芯片都能装）；如果浏览器给文件加了隔离属性，按上一行处理后即可 |
 | 提示 API Key 无效 | 在设置页重新保存并自检，仍失败时到数据服务方后台重新申请 |
 | 搜不到中文名称 | 到 **设置 → 数据** 同步一次全市场代码表 |
 | 提示请求过于频繁 | 稍等片刻再试，并把自动刷新频率调低 |
 | 自选里有 ETF，但集合竞价没有显示 | 集合竞价数据只覆盖 A 股个股，ETF、指数等标的会自动跳过，不影响其他自选股票 |
 | 港美股页提示「取不到」 | 指数本身只有盘中价（长桥对指数不返回盘前 / 盘后 / 夜盘），卡片第二行的指数期货主连来自第三方公开数据，网络或上游异常时可能暂时没有；个股的盘前 / 盘后 / 夜盘则取决于账号行情权限，以及该标的是否在夜盘可交易名单里 |
 | 港美股行情与手机 App 不一致 | 报价级别不同：免费档常见口径是港股 BMP（无实时推送、第 20 个之后延迟）+ 美股 LV1（含盘前盘后），卡片上会写明当前级别；买了行情卡才会变成实时，以长桥为准 |
-| 安装包被系统提示风险 | 安装包暂未做代码签名，请只从上面的正式发布页下载 |
+| 安装包被系统提示风险（Windows SmartScreen） | 安装包暂未做代码签名，请只从上面的正式发布页下载；macOS 的对应提示见上面两行 |
 | 回测结果与其他软件不同 | 不同软件的复权方式、交易价格和手续费假设可能不同，请先核对回测设置 |
 | 持仓总资产显示为负数 | 如果只记录了买入、没有先记录入金，现金会变成负数。请在第一笔买入之前补录入金；只想从今天起跟踪的话，记「买入」时勾上「按当前持仓补录」（数量填现在持有多少股、价格填持仓成本价，会自动配一笔等额入金） |
 
