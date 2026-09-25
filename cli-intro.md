@@ -15,6 +15,7 @@
 | **批量跑回测参数**（网格搜索） | `for f in specs/*.json; do bull-pie-cli backtest run --spec "$f" --out "out/$(basename "$f")"; done` |
 | **把自己算的结果导给 Python / Excel** | `bull-pie-cli bars 600519.SH --start 2026-01-01 --end 2026-09-18 --json > bars.json` |
 | **找相似走势的票，接进别的流程** | `bull-pie-cli shape --reference 600519.SH --vol-days 2 --vol-ratio 1.5 --near-low 8 --json` |
+| **核对图上标的形态**（哪一根、凭什么算命中） | `bull-pie-cli patterns 600519.SH --start 2026-01-01 --end 2026-09-24 --interval week --json` |
 | **先看环境对不对**（排障第一步） | `bull-pie-cli status` |
 | **给 AI 客户端当数据源** | `bull-pie-cli mcp`（见 [mcp-intro.md](mcp-intro.md)） |
 | **收盘后拉一批价量**（自选 / 指定标的） | `bull-pie-cli quote 600519.SH,000001.SZ --out snap.json` |
@@ -134,6 +135,19 @@ bull-pie-cli shape --reference 600519.SH [--window 20] [--start 2026-06-01 --end
 按参照标的的形状（归一化价格 + 量能距离）在**本地全市场底库**上找相似股票。
 默认取最近 `--window` 根；`--start/--end` 成对给出时按指定历史区间比较（最多 120 个交易日）。
 可要求近期连续放量、限制在区间低点附近。默认排除 ST。
+
+### `patterns` — 形态识别
+
+```bash
+bull-pie-cli patterns <代码> --start <日期> --end <日期> \
+  [--interval day|week|month] [--adjust forward|backward|none] [--strong-only] [--limit N] [--json]
+```
+
+按软件内置的形态知识库在本地识别：蜡烛图 16 类 + 经典图表 7 类。结果与个股页 K 线上的标注是**同一份**，
+可以拿来核对「图上标的那几个到底是怎么算出来的」。`--strong-only` 只列强度为「强」的命中；
+代码要带后缀（`600519.SH`）。
+
+> 日线以外也支持周线 / 月线（阈值是相对比例，与周期无关）；分钟级不做形态识别。
 
 ### `backtest` — 回测
 
