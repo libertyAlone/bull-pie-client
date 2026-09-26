@@ -83,7 +83,7 @@ macOS 上就是同一个结构，只换 `command`：
 
 ---
 
-## 四、能用哪些能力（44 个只读工具）
+## 四、能用哪些能力（46 个只读工具）
 
 | 分组 | 工具 |
 | --- | --- |
@@ -94,7 +94,7 @@ macOS 上就是同一个结构，只换 `command`：
 | 个股基本面 | `valuations` 估值（PE/PB/PS/PCF） · `financials` 三表与五类指标 · `stock_f10` F10 · `stock_f10_ext` 资金流/股东户数/公告（第三方源） |
 | 期货与期权 | `futures_varieties` 品种 · `futures_contract` 合约/主连日线 · `futures_basis` 基差 · `futures_positions` 持仓 · `futures_warehouse` 仓单 · `option_varieties` 期权品种 · `option_contract` 期权合约 |
 | 基金 | `fund_detail` 详情 · `fund_nav` 净值 · `fund_bars` 场内日线（仅 ETF） · `fund_financials` 财务 · `fund_news` 资讯 |
-| 第三方展示源 | `flash_news` 7×24 快讯（东方财富） · `global_index` 全球指数 · `global_index_bars` 指数日线 |
+| 第三方展示源 | `flash_news` 7×24 快讯（财联社主源、东方财富兜底） · `watch_news` 自选股快讯（财联社按代码查） · `stock_news` 个股资讯（同一链路，范围限一只票） · `global_index` 全球指数 · `global_index_bars` 指数日线 |
 | 本地数据 | `dump_status` 全市场日线数据状态（导入动作只能在界面里做） |
 
 第三方源（东方财富 / 巨潮资讯）在工具描述里都点名了，**只作阅读**，不进回测、选股、全市场日线数据与推送链路。
