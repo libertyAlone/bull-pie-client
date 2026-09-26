@@ -63,7 +63,7 @@ bull-pie-cli status
 凭据            已配置（来源：Windows 凭据管理器）
 日线缓存        23021 行 · 最新 2026-09-18
 代码表          5574 条
-全市场底库      已导入 · 9290373 行 / 5564 只（2016-09-13 ~ 2026-09-17） · 复权因子 57302 行
+全市场日线数据  已导入 · 9290373 行 / 5564 只（2016-09-13 ~ 2026-09-17） · 复权因子 57302 行
 最近交易日      2026-09-18
 ```
 
@@ -73,7 +73,7 @@ bull-pie-cli status
 > Windows 是 `%APPDATA%\com.bull-pie.app` + 「Windows 凭据管理器」。两边都不会另建一份库。
 
 **4. 需要联网的两个前提**，都在图形界面里配一次即可：**数据接口凭据**（设置 → API 凭据）、
-**全市场日线底库**（设置 → 数据，想用 `--universe market` 选股或跑全市场回测时需要）。
+**全市场日线数据**（设置 → 全市场日线数据，想用 `--universe market` 选股或跑全市场回测时需要）。
 只装命令行版的话这两样都建不起来——这正是它是「只读入口」的含义。
 
 ---
@@ -94,7 +94,7 @@ bull-pie-cli status
 bull-pie-cli status [--json]
 ```
 
-排障第一条命令：看库在哪、有多少数据、最近交易日、凭据配没配、底库导没导入。
+排障第一条命令：看库在哪、有多少数据、最近交易日、凭据配没配、全市场日线数据导没导入。
 
 ### `search` — 检索标的
 
@@ -131,7 +131,7 @@ bull-pie-cli screen --formula "(HHV(H,172)-LLV(L,172))/LLV(L,172)*100;" \
 | 参数 | 说明 |
 | --- | --- |
 | `--formula` | 通达信风格公式源码（最后一条输出线非零即命中） |
-| `--universe` | `watchlist` 自选 · `cached` 本地已缓存 · `list` 指定代码 · `market` 全市场底库 |
+| `--universe` | `watchlist` 自选 · `cached` 本地已缓存 · `list` 指定代码 · `market` 全市场日线数据 |
 | `--codes a,b` | `--universe list` 时的代码列表 |
 | `--within N` | 最近 N 个交易日内命中就算；不传表示不限窗口（只按最新一根判断）。排序模式忽略 |
 | `--no-edge` | 不看「由假变真」的上升沿，只要当前满足就算 |
@@ -152,7 +152,7 @@ bull-pie-cli shape --reference 600519.SH [--window 20] [--start 2026-06-01 --end
   [--near-low 8] [--limit 10] [--include-st] [--json]
 ```
 
-按参照标的的形状（归一化价格 + 量能距离）在**本地全市场底库**上找相似股票。
+按参照标的的形状（归一化价格 + 量能距离）在**本地全市场日线数据**上找相似股票。
 默认取最近 `--window` 根；`--start/--end` 成对给出时按指定历史区间比较（最多 120 个交易日）。
 可要求近期连续放量、限制在区间低点附近。默认排除 ST。
 
@@ -273,8 +273,9 @@ bull-pie-cli version     # 版本号（脚本里判断环境用）
 ### 输出与编码（最常踩的坑）
 
 - 默认是**给人读**的表格 + 摘要；`--json` 才是纯 JSON（stdout 只有数据，日志走 stderr）。
-- **中文乱码**：管道 / 重定向的编码由调用方决定，中文 Windows 的 PowerShell 5.1 按 GBK 解码会乱码。
-  脚本里请用 `--out <文件>`（CLI 自己按 UTF-8 落盘），而不是 `>` 重定向。
+- **中文乱码**：管道 / 重定向的编码由调用方决定，中文 Windows 的 PowerShell 5.1 按 GBK 解码会乱码
+  （macOS / Linux 的终端默认就是 UTF-8，不会有这个问题）。脚本里请用 `--out <文件>`
+  （CLI 自己按 UTF-8 落盘），而不是 `>` 重定向。
 
 ```bash
 # 推荐：结果写文件，再交给 Python / jq 处理
@@ -289,8 +290,8 @@ bull-pie-cli bars 600519.SH --start 2026-01-01 --end 2026-09-18 --json | jq '.ba
 
 | 退出码 | 含义 | 典型处理 |
 | --- | --- | --- |
-| `0` | 成功 | 继续 |
-| `1` | 参数 / 凭据 / 前置条件（例如底库没导入、Key 没配） | 看 stderr 的提示，修好再跑；**不要**自动重试 |
+| `0` | 成功（`status` 只是「报告状态」：缺凭据、全市场日线数据没导入也算成功，把 `未配置` 打在表里） | 继续 |
+| `1` | 参数 / 凭据 / 前置条件（例如全市场日线数据没导入、Key 没配） | 看 stderr 的提示，修好再跑；**不要**自动重试 |
 | `2` | 上游或网络问题（可重试） | 稍后重试；上游限流有明确提示 |
 | `3` | 本地读写故障 | 检查磁盘 / 权限 / 数据目录 |
 
@@ -307,10 +308,16 @@ for f in specs/*.json; do
 done
 ```
 
-Windows 计划任务 / PowerShell 定时跑同样可行：
+定时跑（收盘后每天一次）各平台都有现成做法：
 
 ```powershell
+# Windows：计划任务 / PowerShell
 pwsh -c "& 'C:\Tools\bull-pie\bull-pie-cli.exe' screen --formula 'C>MA(C,20);' --universe market --out 'D:\hits\daily.json'"
+```
+
+```bash
+# macOS：crontab -e 里加一行（15:35 跑；别用 launchd 的 StartCalendarInterval 也行）
+35 15 * * 1-5 /usr/local/bin/bull-pie-cli screen --formula 'C>MA(C,20);' --universe market --out "$HOME/hits/$(date +\%F).json"
 ```
 
 ---
@@ -319,9 +326,9 @@ pwsh -c "& 'C:\Tools\bull-pie\bull-pie-cli.exe' screen --formula 'C>MA(C,20);' -
 
 | 项 | 说明 |
 | --- | --- |
-| 数据目录 | 默认 `%APPDATA%\com.bull-pie.app`（与图形界面**同一份**，CLI 不会另建库）；优先级 `--app-dir <目录>` > 环境变量 `BULL_PIE_DATA_DIR` > 默认 |
-| 凭据 | 与界面共用（系统凭据库）。CLI 不提供写入凭据的命令，请在界面里配一次 |
-| 只读 | CLI 不提供任何写操作：改自选、存公式、改监控、触发推送、导入底库都只能在界面里做 |
+| 数据目录 | 与图形界面**同一份**（CLI 不会另建库）：Windows 默认 `%APPDATA%\com.bull-pie.app`、macOS 默认 `~/.local/share/com.bull-pie.app`；优先级 `--app-dir <目录>` > 环境变量 `BULL_PIE_DATA_DIR` > 默认 |
+| 凭据 | 与界面共用（系统凭据库：Windows 凭据管理器 / macOS 钥匙串）。CLI 不提供写入凭据的命令，请在界面里配一次 |
+| 只读 | CLI 不提供任何写操作：改自选、存公式、改监控、触发推送、导入全市场日线数据都只能在界面里做 |
 | 限流 | 上游限流按**进程**算：GUI 与 CLI 同时大批量拉数会互相抢配额，脚本里建议串行、别并发 |
 
 ---
@@ -331,7 +338,7 @@ pwsh -c "& 'C:\Tools\bull-pie\bull-pie-cli.exe' screen --formula 'C>MA(C,20);' -
 | 现象 | 原因与处理 |
 | --- | --- |
 | `status` 显示「凭据：未配置」 | 到图形界面「设置 → API 凭据」配一次；或给它设环境变量 `HITHINK_FINANCE_API_KEY` |
-| 选股返回空 / 报「范围内没有本地日线」 | 先跑 `status` 看「全市场底库」那一行（或到界面「设置 → 数据」）；`--universe market` 需要底库 |
+| 选股返回空 / 报「范围内没有本地日线」 | 先跑 `status` 看「全市场日线数据」那一行（或到界面「设置 → 全市场日线数据」）；`--universe market` 需要全市场日线数据 |
 | 中文乱码 | 用 `--out <文件>`，别用 `>` 重定向（见上） |
 | 退出码 2 + 「请求过于频繁」 | 上游限流：稍后重试，或把脚本改成串行、拉长间隔 |
 | 输出被截断 | `screen` 有 `--top`、`shape` 有 `--limit`、`futures`/`options` 有 `--days`；`varieties` 默认只打前 40 个（完整名单用 `--json`）；`bars` 返回全部区间（很大时用 `--out`） |
