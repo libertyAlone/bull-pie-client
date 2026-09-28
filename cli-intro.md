@@ -56,7 +56,7 @@ bull-pie-cli status
 ```
 
 ```
-版本            0.3.0
+版本            0.8.2
 应用数据目录    C:\Users\你\AppData\Roaming\com.bull-pie.app
 本地库          …\com.bull-pie.app\market.db
 数据版本        bars:2026-09-18|23021|2026-09-18T13:41:25Z
@@ -139,6 +139,7 @@ bull-pie-cli screen --formula "(HHV(H,172)-LLV(L,172))/LLV(L,172)*100;" \
 | `--top N` | 排名模式取前 N（默认 50，上限 500） |
 | `--exclude-st` | 排除 ST / *ST / 退市整理（低价 ST 股容易霸榜） |
 | `--min-price N` | 只要最新价 ≥ N 元的标的 |
+| `--max-price N` | 只要最新价 ≤ N 元的标的 |
 
 > 「今年以来」这类窗口：`--universe market` 时公式里的交易日数量要自己给。用
 > `status --json` 里的交易日历或界面里的提示（例如今年以来 172 个交易日 → `HHV(H,172)`），
